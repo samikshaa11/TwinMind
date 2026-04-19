@@ -5,21 +5,11 @@ import { formatErrorResponse } from "./utils/errors.js";
 
 const app = express();
 
-/**
- * 🚀 PRODUCTION-CORRECT PORT HANDLING (Render-safe)
- * MUST use process.env.PORT exactly once
- */
-const PORT = process.env.PORT || 8787;
+const preferredPort = Number(process.env.PORT) || 8787;
+const MAX_PORT_TRIES = 30;
 
-/**
- * -----------------------------
- * CORS CONFIG
- * -----------------------------
- */
 const configuredOrigins =
-  process.env.CORS_ORIGIN?.split(",")
-    .map((s) => s.trim())
-    .filter(Boolean) || [];
+  process.env.CORS_ORIGIN?.split(",").map((s) => s.trim()).filter(Boolean) || [];
 
 function isLocalDevOrigin(origin) {
   if (!origin) return true;
@@ -33,55 +23,50 @@ app.use(
         cb(null, true);
         return;
       }
-
       if (configuredOrigins.includes(origin)) {
         cb(null, true);
         return;
       }
-
       cb(new Error(`CORS blocked for origin: ${origin || "unknown"}`));
     },
     credentials: false,
   })
 );
 
-/**
- * -----------------------------
- * MIDDLEWARE
- * -----------------------------
- */
 app.use(express.json({ limit: "2mb" }));
 
-/**
- * -----------------------------
- * ROUTES
- * -----------------------------
- */
 app.use("/api", apiRouter);
 
-/**
- * -----------------------------
- * ERROR HANDLER
- * -----------------------------
- */
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
-  const status =
-    err?.status && Number.isInteger(err.status) ? err.status : 500;
-
+  const status = err?.status && Number.isInteger(err.status) ? err.status : 500;
   res.status(status).json(formatErrorResponse(err));
 });
 
-/**
- * -----------------------------
- * SERVER START (IMPORTANT FIX)
- * -----------------------------
- * ❌ NO PORT SCANNING
- * ❌ NO RETRIES
- * ❌ NO DYNAMIC BINDING
- *
- * Render REQUIREMENT: bind exactly once to process.env.PORT
- */
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`TwinMind API listening on port ${PORT}`);
+let boundPort = preferredPort;
+const server = app.listen(boundPort);
+
+server.on("listening", () => {
+  const addr = server.address();
+  const p = typeof addr === "object" && addr && "port" in addr ? addr.port : boundPort;
+  // eslint-disable-next-line no-console
+  console.log(`TwinMind API listening on http://localhost:${p}`);
+  if (p !== preferredPort) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[TwinMind] Port ${preferredPort} was in use; using ${p}. If the UI cannot reach the API, add to frontend/.env.development:\n  VITE_API_PROXY_TARGET=http://localhost:${p}\n`
+    );
+  }
+});
+
+server.on("error", (err) => {
+  const code = /** @type {NodeJS.ErrnoException} */ (err).code;
+  if (code === "EADDRINUSE" && boundPort - preferredPort < MAX_PORT_TRIES) {
+    boundPort += 1;
+    server.listen(boundPort);
+    return;
+  }
+  // eslint-disable-next-line no-console
+  console.error("TwinMind API failed to start:", err);
+  process.exit(1);
 });
