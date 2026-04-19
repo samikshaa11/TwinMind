@@ -4,10 +4,6 @@ if (!BASE_URL) {
   throw new Error("VITE_API_BASE is not set in environment variables");
 }
 
-function shouldRetryStatus(status: number): boolean {
-  return status === 500 || status === 502 || status === 503 || status === 504;
-}
-
 export class ApiError extends Error {
   readonly status: number;
   readonly body?: unknown;
