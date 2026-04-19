@@ -5,14 +5,23 @@ const PORT_CANDIDATES = Array.from({ length: 21 }, (_, i) => 8787 + i);
 
 function candidateBases(): string[] {
   const list: string[] = [];
+
+  // In production: ONLY use deployed backend
+  if (import.meta.env.PROD) {
+    if (explicitBase) return [explicitBase];
+    return []; // fail fast instead of hitting frontend
+  }
+
+  // Local dev behavior (keep your current logic)
   if (cachedBase) list.push(cachedBase);
   if (explicitBase) list.push(explicitBase);
-  list.push(""); // preferred: same-origin via Vite proxy
+  list.push("");
 
   for (const p of PORT_CANDIDATES) {
     list.push(`http://127.0.0.1:${p}`);
     list.push(`http://localhost:${p}`);
   }
+
   return [...new Set(list)];
 }
 
