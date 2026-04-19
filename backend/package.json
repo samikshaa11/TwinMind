@@ -9,7 +9,7 @@
     "dev": "nodemon --watch . --ext js,json --ignore node_modules --ignore ../node_modules --ignore ../frontend --ignore \"**/*.log\" server.js"
   },
   "engines": {
-    "node": ">=18.18.0"
+    "node": "18.x"
   },
   "dependencies": {
     "cors": "^2.8.5",
