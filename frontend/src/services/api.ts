@@ -1,8 +1,6 @@
-const BASE_URL = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
-
-if (!BASE_URL) {
-  throw new Error("VITE_API_BASE is not set in environment variables");
-}
+const BASE_URL =
+  (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, "") ||
+  "https://twinmind-tsnd.onrender.com";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -29,19 +27,18 @@ async function request(path: string, init: RequestInit): Promise<Response> {
   return fetch(url, init);
 }
 
-function groqHeaders(apiKey: string): HeadersInit {
-  const key = normalizeApiKey(apiKey);
-  return {
-    "X-Groq-API-Key": key,
-    "Content-Type": "application/json",
-  };
-}
-
 function normalizeApiKey(value: string): string {
   return String(value ?? "")
     .trim()
     .replace(/^['"]|['"]$/g, "")
     .replace(/\s+/g, "");
+}
+
+function groqHeaders(apiKey: string): HeadersInit {
+  return {
+    "X-Groq-API-Key": normalizeApiKey(apiKey),
+    "Content-Type": "application/json",
+  };
 }
 
 function extensionForMime(mime: string): string {
@@ -54,6 +51,8 @@ function extensionForMime(mime: string): string {
   if (m.includes("mp4")) return "mp4";
   return "webm";
 }
+
+/* -------------------- TRANSCRIPTION -------------------- */
 
 export async function transcribeAudio(
   apiKey: string,
@@ -84,6 +83,8 @@ export async function transcribeAudio(
 
   return { text: json.text ?? "" };
 }
+
+/* -------------------- SUGGESTIONS -------------------- */
 
 export async function fetchSuggestions(
   apiKey: string,
@@ -117,6 +118,8 @@ export async function fetchSuggestions(
 
   return { suggestions: json.suggestions.map(String) };
 }
+
+/* -------------------- CHAT -------------------- */
 
 export async function chatFromSuggestion(params: {
   apiKey: string;
