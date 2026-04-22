@@ -1,6 +1,4 @@
-const BASE_URL =
-  (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, "") ||
-  "https://twinmind-tsnd.onrender.com";
+const BASE_URL = "https://twinmind-tsnd.onrender.com";
 
 export class ApiError extends Error {
   readonly status: number;
