@@ -22,6 +22,7 @@ async function readJson(res: Response): Promise<any> {
 
 async function request(path: string, init: RequestInit): Promise<Response> {
   const url = `${BASE_URL}${path}`;
+  console.log("URL inisde method:" + url);
   return fetch(url, init);
 }
 
