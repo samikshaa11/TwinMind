@@ -16,22 +16,24 @@ function isLocalDevOrigin(origin) {
   return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
 }
 
-app.use(
-  cors({
-    origin(origin, cb) {
-      if (isLocalDevOrigin(origin)) {
-        cb(null, true);
-        return;
-      }
-      if (configuredOrigins.includes(origin)) {
-        cb(null, true);
-        return;
-      }
-      cb(new Error(`CORS blocked for origin: ${origin || "unknown"}`));
-    },
-    credentials: false,
-  })
-);
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin(origin, cb) {
+//       if (isLocalDevOrigin(origin)) {
+//         cb(null, true);
+//         return;
+//       }
+//       if (configuredOrigins.includes(origin)) {
+//         cb(null, true);
+//         return;
+//       }
+//       cb(new Error(`CORS blocked for origin: ${origin || "unknown"}`));
+//     },
+//     credentials: false,
+//   })
+// );
 
 app.use(express.json({ limit: "2mb" }));
 
