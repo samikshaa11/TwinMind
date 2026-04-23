@@ -66,6 +66,8 @@ export async function transcribeAudio(
     method: "POST",
     headers: {
       "X-Groq-API-Key": normalizeApiKey(apiKey),
+      "Origin": `${BASE_URL}`,
+      "Referer": `${BASE_URL}`
     },
     body: fd,
   });
