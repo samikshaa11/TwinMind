@@ -16,16 +16,16 @@ function isLocalDevOrigin(origin) {
   return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
 }
 
-const corsOptions = {
-  origin: 'https://twin-mind-frontend-samikshas-projects-14a163de.vercel.app/', // Replace with your domain
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allow only specific HTTP methods
-  credentials: true // Allow cookies/headers if needed
-};
+// const corsOptions = {
+//   origin: 'https://twin-mind-frontend-samikshas-projects-14a163de.vercel.app/', // Replace with your domain
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allow only specific HTTP methods
+//   credentials: true // Allow cookies/headers if needed
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 
-// app.use(cors());
+app.use(cors());
 
 // app.use(
 //   cors({
