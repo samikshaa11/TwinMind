@@ -18,7 +18,7 @@ function isLocalDevOrigin(origin) {
 
 const corsOptions = {
   origin: 'https://twin-mind-frontend-samikshas-projects-14a163de.vercel.app/', // Replace with your domain
-  methods: *, // Allow only specific HTTP methods
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allow only specific HTTP methods
   credentials: true // Allow cookies/headers if needed
 };
 
