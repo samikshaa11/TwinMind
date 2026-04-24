@@ -1,5 +1,7 @@
 # TwinMind · AI Meeting Copilot
 
+**Live Demo:** https://twin-mind-frontend-samikshas-projects-14a163de.vercel.app/
+
 Production-style prototype: **live microphone transcription** (Groq Whisper Large V3), **three rolling suggestions** every configurable interval (Groq `openai/gpt-oss-120b`), and a **chat column** for deep answers grounded in the **full transcript**. All state is **in-memory** in the browser session; settings (including API key) persist in **localStorage**.
 
 Recent improvements included:
